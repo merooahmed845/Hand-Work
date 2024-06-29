@@ -11,10 +11,9 @@ class ForgetPassword extends StatefulWidget {
 
 class _ForgetPasswordState extends State<ForgetPassword> {
   final _nationalIdController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final _emailController = TextEditingController();
   String _errorMessage = '';
   bool _isAuthenticated = false;
-  bool _obscurePassword = true;
   bool _isLoading = false;
 
   Future<void> _validateUser() async {
@@ -23,10 +22,10 @@ class _ForgetPasswordState extends State<ForgetPassword> {
     });
 
     String nationalId = _nationalIdController.text;
-    String password = _passwordController.text;
+    String email = _emailController.text;
 
     try {
-      var response = await Account.checkUser(nationalId, password);
+      var response = await Account.checkforget(nationalId, email);
       if (response['authenticated']) {
         setState(() {
           _isAuthenticated = true;
@@ -96,24 +95,22 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                       ],
                     ),
                     SizedBox(height: 10),
-                    TextField(
-                      controller: _passwordController,
+                    TextFormField(
+                      controller: _emailController,
                       decoration: InputDecoration(
-                        labelText: 'Password',
+                        labelText: 'E-mail',
                         border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.lock),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscurePassword ? Icons.visibility : Icons.visibility_off,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _obscurePassword = !_obscurePassword;
-                            });
-                          },
-                        ),
+                        prefixIcon: Icon(Icons.email),
                       ),
-                      obscureText: _obscurePassword,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your email';
+                        }
+                        if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                          return 'Please enter a valid email address';
+                        }
+                        return null;
+                      },
                     ),
                     SizedBox(height: 20),
                     ElevatedButton(

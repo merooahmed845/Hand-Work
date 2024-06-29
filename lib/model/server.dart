@@ -14,6 +14,7 @@ class Account {
   static const  _GET_INFO_ACC_ACTION = "GIT_INFO";
   static const _EDIT_ACC_ACTION = "EDIT_ACC"; // Change this line
   static const _DISABLE_USER_ACTION = 'DISABLE_USER';
+  static const String _CHECK_FORGET_ACTION = "CHAKE_FORGET";
 
   // Method to create table
   static Future<String> createTable() async {
@@ -191,6 +192,31 @@ static Future<List<InfoAcc>> getInfoAcc(String nationalid, String password) asyn
         print('Error disabling user: $e');
       }
       return 'error';
+    }
+  }
+
+  static Future<Map<String, dynamic>> checkforget(
+      String nationalid, String email) async {
+    try {
+      var map = <String, dynamic>{};
+      map['action'] = _CHECK_FORGET_ACTION;
+      map['nationalid'] = nationalid;
+      map['email'] = email;
+
+      final response = await http.post(url, body: map);
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = json.decode(response.body);
+        bool isAuthenticated = data['status'] == 'success';
+        String userType = data['user_type'];
+        return {'authenticated': isAuthenticated, 'user_type': userType};
+      } else {
+        return {'authenticated': false, 'user_type': ''};
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error: $e');
+      }
+      return {'authenticated': false, 'user_type': ''};
     }
   }
 }

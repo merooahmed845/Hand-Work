@@ -303,5 +303,25 @@ if ("GET_FEEDBACK" == $action) {
         echo json_encode([]);
     }
 }
+
+if ("CHAKE_FORGET" == $action) {
+    $nationalid = $_POST["nationalid"];
+    $email = $_POST["email"];
+
+    if (empty($nationalid) || empty($email)) {
+        die("Please provide both National ID and Password");
+    }
+
+    $sql = "SELECT * FROM $table_accounts WHERE nationalid='$nationalid' AND email='$email' AND status='1'";
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $user_type = $row["user_type"];
+        echo json_encode(array("status" => "success", "user_type" => $user_type));
+    } else {
+        echo json_encode(array("status" => "failure"));
+    }
+}
 $conn->close();
 ?>
