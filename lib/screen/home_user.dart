@@ -11,6 +11,7 @@ import '../model/sever_feedback.dart';
 import 'LoginPage.dart';
 import 'MyAccount_user.dart';
 import 'ShowCommentPage.dart'; // استيراد الشاشة الجديدة
+import 'package:popover/popover.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({Key? key}) : super(key: key);
@@ -118,7 +119,8 @@ class _SearchPageState extends State<SearchPage> with AutomaticKeepAliveClientMi
       _filteredPosts = searchText.isEmpty
           ? _posts
           : _posts.where((post) {
-        return post.postText.toLowerCase().contains(searchTextLower);
+        return post.postText.toLowerCase().contains(searchTextLower) ||
+            post.city.toLowerCase().contains(searchTextLower);
       }).toList();
     });
   }
@@ -129,11 +131,17 @@ class _SearchPageState extends State<SearchPage> with AutomaticKeepAliveClientMi
     return Scaffold(
       appBar: AppBar(
         title: TextField(
-          decoration: const InputDecoration(
-            hintText: 'Search...',
+          decoration: InputDecoration(
+            hintText: 'Search posts and cities...',
             border: InputBorder.none,
-            prefixIcon: Icon(Icons.search),
+            prefixIcon: Icon(
+              Icons.search,
+              size: 26, // حجم الأيقونة
+              color: Colors.black, // لون الأيقونة
+            ),
+            hintStyle: TextStyle(fontSize: 26), // حجم الخط للتلميح
           ),
+          style: TextStyle(fontSize: 26), // حجم الخط للنص المدخل
           onChanged: _filterPosts,
         ),
         automaticallyImplyLeading: false,
@@ -211,6 +219,7 @@ class PostItem extends StatefulWidget {
 
 class _PostItemState extends State<PostItem> {
   final TextEditingController _feedbackText = TextEditingController();
+  final TextEditingController _name = TextEditingController();
   List<feedbacks> _feedbackList = [];
 
   void sendWhatsapp() {
@@ -286,6 +295,7 @@ class _PostItemState extends State<PostItem> {
   Future<void> _addFeedback() async {
     String postId = widget.post.id;
     String feedbackText = _feedbackText.text.trim();
+    String name = _name.text.trim();
 
     if (feedbackText.isEmpty) {
       _showSnackBar('Please enter feedback', Colors.red);
@@ -293,7 +303,7 @@ class _PostItemState extends State<PostItem> {
     }
 
     try {
-      String response = await ServicesFeedback.addFeedback(postId,feedbackText);
+      String response = await ServicesFeedback.addFeedback(postId, name, feedbackText);
       if (response == 'success') {
         _showSnackBar('Feedback added successfully', Colors.green);
         await _getFeedback();
@@ -324,6 +334,21 @@ class _PostItemState extends State<PostItem> {
                       border: OutlineInputBorder(),
                       prefixIcon: Icon(Icons.info),
                     ),
+                  ),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    controller: _name,
+                    decoration: InputDecoration(
+                      labelText: 'Your name',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.person),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your name';
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 10),
                   TextFormField(
@@ -533,29 +558,6 @@ class _PostItemState extends State<PostItem> {
                       ),
                     ],
                   ),
-                  Spacer(),
-                  PopupMenuButton<String>(
-                    onSelected: (value) {
-                      if (value == 'feedback') {
-                        _showFeedbackDialog();
-                      } else if (value == 'show_comment') {
-                        _showCommentPage();
-                      }
-                    },
-                    itemBuilder: (BuildContext context) {
-                      return [
-                        const PopupMenuItem(
-                          value: 'feedback',
-                          child: Text('Feedback'),
-                        ),
-                        const PopupMenuItem(
-                          value: 'show_comment',
-                          child: Text('Show comment'),
-                        ),
-                      ];
-                    },
-                    icon: const Icon(Icons.more_vert),
-                  ),
                 ],
               ),
             ),
@@ -618,26 +620,88 @@ class _PostItemState extends State<PostItem> {
             Padding(
               padding: const EdgeInsets.all(10),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton.icon(
-                    onPressed: () async {
-                      final phoneUrl = 'tel:${widget.post.phonenumber}';
-                      if (await canLaunch(phoneUrl)) {
-                        await launch(phoneUrl);
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Could not launch phone call')),
-                        );
-                      }
-                    },
-                    icon: const Icon(Icons.call),
-                    label: const Text('Call now'),
+                    onPressed: _showFeedbackDialog,
+                    icon: const Icon(Icons.feedback),
+                    label: const Text('Feedback'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
                   ),
+                  const SizedBox(width: 20), // المسافة بين الزرين
                   ElevatedButton.icon(
-                    onPressed: sendWhatsapp,
-                    icon: const Icon(Icons.chat, color: Colors.green),
-                    label: const Text('WhatsApp', style: TextStyle(color: Colors.green)),
+                    onPressed: _showCommentPage,
+                    icon: const Icon(Icons.comment),
+                    label: const Text('Comment'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  GestureDetector(
+                    onTap: () {
+                      showPopover(
+                        context: context,
+                        bodyBuilder: (BuildContext context) => Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Color.fromARGB(255, 33, 189, 202).withOpacity(0.1),
+                                Color.fromARGB(255, 33, 189, 202).withOpacity(1.0),
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                          ),
+                          child: ListView(
+                            padding: EdgeInsets.zero,
+                            shrinkWrap: true,
+                            children: [
+                              ListTile(
+                                leading: Icon(Icons.call),
+                                title: Text('Call now'),
+                                onTap: () async {
+                                  Navigator.of(context).pop(); // إغلاق القائمة بعد الضغط على الخيار
+                                  final phoneUrl = 'tel:${widget.post.phonenumber}';
+                                  if (await canLaunch(phoneUrl)) {
+                                    await launch(phoneUrl);
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Could not launch phone call')),
+                                    );
+                                  }
+                                },
+                              ),
+                              ListTile(
+                                leading: Icon(Icons.message),
+                                title: Text('WhatsApp'),
+                                onTap: () {
+                                  Navigator.of(context).pop(); // إغلاق القائمة بعد الضغط على الخيار
+                                  sendWhatsapp();
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        onPop: () => print('Popover was popped!'),
+                        direction: PopoverDirection.top,
+                        width: 440,
+                        height: 110,
+                        arrowHeight: 10,
+                        arrowWidth: 20,
+                        barrierColor: Colors.transparent,
+                        arrowDxOffset: 145,
+                      );
+                    },
+                    child: const Icon(Icons.more_vert),
                   ),
                 ],
               ),

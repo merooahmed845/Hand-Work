@@ -33,11 +33,12 @@ class ServicesFeedback {
   }
 
   // Method to add Feedback
-  static Future<String> addFeedback(String postId,String feedbackText) async {
+  static Future<String> addFeedback(String postId,String name ,String feedbackText) async {
     try {
       var map = <String, dynamic>{};
       map['action'] = _ADD_FEEDBACK_ACTION;
       map['post_id'] = postId;
+      map['name'] = name;
       map['feedbacktext'] = feedbackText;
       final response = await http.post(url, body: map);
       if (kDebugMode) {

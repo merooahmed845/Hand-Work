@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart'; // لحزمة الرسوم المتحركة
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../model/server.dart';
 import 'home_user.dart';
 import 'home_worker.dart';

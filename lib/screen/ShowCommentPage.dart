@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../model/Feedback.dart';
+import '../model/Feedback.dart'; // Adjust the path as per your project structure
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'home_user.dart';
@@ -15,20 +15,6 @@ class ShowCommentPage extends StatefulWidget {
 
 class _ShowCommentPageState extends State<ShowCommentPage> {
   List<feedbacks> _filteredFeedbackList = [];
-  final List<String> _arabicNames = [
-    'Ahmed', 'Mohammed', 'Ali', 'Khalid', 'Abdullah', 'Omar', 'Hassan', 'Hussein', 'Saad', 'Salman',
-    'Youssef', 'Ibrahim', 'Ismail', 'Osama', 'Nasser', 'Farid', 'Mahmoud', 'Hamza', 'Bilal', 'Mustafa',
-    'Sami', 'Karim', 'Tariq', 'Fahd', 'Amir', 'Samir', 'Adnan', 'Rashid', 'Zaid', 'Nabil', 'Rami',
-    'Anwar', 'Majid', 'Faisal', 'Mansour', 'Jamal', 'Hadi', 'Walid', 'Salah', 'Emad', 'Bassam',
-    'Raed', 'Adel', 'Jaber', 'Talal', 'Saif', 'Mounir', 'Kamel', 'Gamal', 'Aziz', 'Hisham',
-    'Hatem', 'Mazen', 'Rafik', 'Shadi', 'Ashraf', 'Ayman', 'Nawaf', 'Sabri', 'Nadir', 'Nashat',
-    'Ghaith', 'Qais', 'Firas', 'Basil', 'Jad', 'Murad', 'Fouad', 'Iyas', 'Hani', 'Luqman',
-    'Murhaf', 'Rida', 'Sufyan', 'Tamer', 'Zuhair', 'Zayn', 'Rashad', 'Mahdi', 'Farouk', 'Qasim',
-    'Alaa', 'Samer', 'Rakan', 'Taha', 'Ammar', 'Nour', 'Hatim', 'Azeem', 'Ilyas', 'Rayyan',
-    'Ameer', 'Baraa', 'Qutaiba', 'Wael', 'Muwafaq', 'Fateh', 'Kareem', 'Mazhar', 'Khalil', 'Mutasim',
-    'Salahuddin', 'Fadhl', 'Yasser', 'Bashar', 'Rami', 'Nazir', 'Abdelrahman', 'Riyad', 'Tariq', 'Laith',
-    'Marwan', 'Haron', 'Ebrahem', 'Maya', 'Ans', 'Mena', 'Abdrhaman'
-  ];
 
   @override
   void initState() {
@@ -90,7 +76,6 @@ class _ShowCommentPageState extends State<ShowCommentPage> {
                       ? ListView.builder(
                     itemCount: _filteredFeedbackList.length,
                     itemBuilder: (context, index) {
-                      String randomName = _arabicNames[index % _arabicNames.length];
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                         child: Container(
@@ -111,7 +96,7 @@ class _ShowCommentPageState extends State<ShowCommentPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  '$randomName',
+                                  _filteredFeedbackList[index].name,
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,

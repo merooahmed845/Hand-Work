@@ -46,6 +46,7 @@ dependencies:
   url_launcher:
   curved_navigation_bar: ^1.0.6
   flutter_quill: ^9.4.2
+  popover: ^0.3.0+1
 
 
 

@@ -191,7 +191,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 right: 0,
                                 child: Icon(
                                   Icons.camera_alt,
-                                  color: Colors.white,
+                                  color: Colors.black,
                                   size: 30,
                                 ),
                               ),

@@ -18,7 +18,7 @@ class _MyAccountUserState extends State<MyAccountUser> {
   String _errorMessage = '';
   bool _loading = true;
 
-  int _selectedIndex = 1; // تأكد من أن العنصر المحدد هو Profile
+  int _selectedIndex = 1;
 
   @override
   void initState() {

@@ -4,7 +4,6 @@ $servername = "localhost";
 $username = "id21923587_handworkpj";
 $password = "123Mm@#8";
 $dbname = "id21923587_handwork";
-$table_accounts = "Accounts";
 $table_posts = "post";
 
 // Create connection

@@ -12,7 +12,7 @@ class Account {
   static const _ADD_USER_ACTION = 'ADD_USER';
   static const String _CHECK_USER_ACTION = "CHAKE_USER";
   static const  _GET_INFO_ACC_ACTION = "GIT_INFO";
-  static const _EDIT_ACC_ACTION = "EDIT_ACC"; // Change this line
+  static const _EDIT_ACC_ACTION = "EDIT_ACC";
   static const _DISABLE_USER_ACTION = 'DISABLE_USER';
   static const String _CHECK_FORGET_ACTION = "CHAKE_FORGET";
 

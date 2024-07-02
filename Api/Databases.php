@@ -69,6 +69,7 @@ if ("CREATE_TABLES_Feedback" == $action) {
     $sql_feedback = "CREATE TABLE IF NOT EXISTS $table_feedback (
         id INT(10) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
         post_id INT(10) UNSIGNED NOT NULL,
+        name VARCHAR(255) NOT NULL,
         feedback_text TEXT NOT NULL,
         FOREIGN KEY (post_id) REFERENCES $table_posts(id)
     )";
@@ -80,11 +81,13 @@ if ("CREATE_TABLES_Feedback" == $action) {
     }
 }
 
+
 if ("ADD_FEEDBACK" == $action) {
     $post_id = $_POST['post_id'];
+    $name = $_POST['name'];
     $feedback_text = $_POST['feedbacktext'];
 
-    $sql = "INSERT INTO $table_feedback (post_id,feedback_text) VALUES ('$post_id','$feedback_text')";
+    $sql = "INSERT INTO $table_feedback (post_id, name ,feedback_text ) VALUES ('$post_id', '$name', '$feedback_text')";
 
     if ($conn->query($sql) === TRUE) {
         echo "success";
@@ -92,6 +95,7 @@ if ("ADD_FEEDBACK" == $action) {
         echo "error: " . $conn->error;
     }
 }
+
 
 
 
@@ -291,7 +295,7 @@ if ("DELETE_POST" == $action) {
 
 if ("GET_FEEDBACK" == $action) {
     $db_data = array();
-    $sql = "SELECT id, post_id, feedback_text FROM $table_feedback ORDER BY id DESC";
+    $sql = "SELECT id, post_id, name, feedback_text FROM $table_feedback ORDER BY id DESC";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {

@@ -1,11 +1,13 @@
 class feedbacks {
   String id;
   String post_id;
+  String name;
   String feedback_text;
 
   feedbacks({
     required this.id,
     required this.post_id,
+    required this.name,
     required this.feedback_text,
 
   });
@@ -14,6 +16,7 @@ class feedbacks {
     return feedbacks(
       id: json['id'] as String,
       post_id: json['post_id'] as String,
+      name: json['name'] as String,
       feedback_text: json['feedback_text'] as String,
     );
   }
