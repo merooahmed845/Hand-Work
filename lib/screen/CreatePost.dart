@@ -19,7 +19,6 @@ class CreatePost extends StatefulWidget {
 
 class _CreatePostState extends State<CreatePost> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _userNameTD = TextEditingController();
   final TextEditingController _phoneNumber = TextEditingController();
   final TextEditingController _city = TextEditingController();
   final TextEditingController _postTitleTD = TextEditingController();
@@ -44,7 +43,6 @@ class _CreatePostState extends State<CreatePost> {
   }
 
   void _clearTextInput() {
-    _userNameTD.clear();
     _phoneNumber.clear();
     _city.clear();
     _postTitleTD.clear();
@@ -115,7 +113,6 @@ class _CreatePostState extends State<CreatePost> {
       String base64Image = base64Encode(_selectedImageBytes!);
       try {
         String result = await Services.addPost(
-          _userNameTD.text,
           _nationalID!,
           _phoneNumber.text,
           _city.text,
@@ -212,14 +209,6 @@ class _CreatePostState extends State<CreatePost> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // حقل اسم المستخدم
-                    _buildTextField(
-                      controller: _userNameTD,
-                      hintText: 'Username',
-                      icon: Icons.person,
-                    ),
-                    const SizedBox(height: 20),
-
                     // حقل رقم الهاتف
                     _buildTextField(
                       controller: _phoneNumber,

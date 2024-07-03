@@ -504,15 +504,9 @@ class _PostItemState extends State<PostItem> {
                   GestureDetector(
                     onTap: _showDetailsDialog,
                     child: CircleAvatar(
-                      backgroundColor: Colors.blue,
                       radius: 20,
-                      child: Text(
-                        widget.post.username[0].toUpperCase(),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                        ),
-                      ),
+                      backgroundImage: MemoryImage(base64Decode(widget.post.imageU)), // عرض صورة imageU
+                      backgroundColor: Colors.transparent,
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -520,7 +514,7 @@ class _PostItemState extends State<PostItem> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.post.username,
+                        widget.post.firstName,
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,

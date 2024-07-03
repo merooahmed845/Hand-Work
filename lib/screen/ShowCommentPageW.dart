@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:hand2/screen/home_worker.dart';
 import '../model/Feedback.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'home_user.dart';
 
-class ShowCommentPage extends StatefulWidget {
+class ShowCommentPageW extends StatefulWidget {
   final List<feedbacks> feedbackList;
 
-  const ShowCommentPage({Key? key, required this.feedbackList}) : super(key: key);
+  const ShowCommentPageW({Key? key, required this.feedbackList}) : super(key: key);
 
   @override
-  _ShowCommentPageState createState() => _ShowCommentPageState();
+  _ShowCommentPageWState createState() => _ShowCommentPageWState();
 }
 
-class _ShowCommentPageState extends State<ShowCommentPage> {
+class _ShowCommentPageWState extends State<ShowCommentPageW> {
   List<feedbacks> _filteredFeedbackList = [];
 
   @override
@@ -43,7 +44,7 @@ class _ShowCommentPageState extends State<ShowCommentPage> {
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const SearchPage()),
+          MaterialPageRoute(builder: (context) => const WorkerPage()),
         );
         return false;
       },

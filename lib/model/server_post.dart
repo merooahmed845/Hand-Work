@@ -5,9 +5,9 @@ import 'dart:convert';
 
 class Services {
   static var url = Uri.parse(
-      'https://handworke.000webhostapp.com/API_POST/Post_api.php');
+      'https://handworke.000webhostapp.com/Database/Databases.php');
 
-  static const _CREATE_TABLE_ACTION = 'CREATE_TABLE';
+  static const _CREATE_TABLE_ACTION = 'CREATE_TABLES_Posts';
   static const _ADD_POST_ACTION = 'ADD_POST';
   static const _GET_ALL_POSTS_ACTION = 'GET_ALL';
   static const _DELETE_POST_ACTION = 'DELETE_POST';
@@ -36,7 +36,6 @@ class Services {
 
   // Method to add Post
   static Future<String> addPost(
-      String userName,
       String nationalid,
       String phonenumber,
       String city,
@@ -47,7 +46,6 @@ class Services {
     try {
       var map = <String, dynamic>{};
       map['action'] = _ADD_POST_ACTION;
-      map['user_name'] = userName;
       map['national_id'] = nationalid;
       map['phone_number'] = phonenumber;
       map['city'] = city;

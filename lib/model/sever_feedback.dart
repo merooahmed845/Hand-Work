@@ -65,7 +65,7 @@ class ServicesFeedback {
       map['action'] = _GET_FEEDBACK_ACTION;
       final response = await http.post(url, body: map);
       if (kDebugMode) {
-        print('Get Feedback response: ${response.body}');
+        print('Get Feedback response: Done');
       }
       if (200 == response.statusCode) {
         List<feedbacks> list = parseResponse(response.body);

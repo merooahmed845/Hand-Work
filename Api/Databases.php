@@ -48,13 +48,14 @@ if ("CREATE_TABLES_Accounts" == $action) {
 if ("CREATE_TABLES_Posts" == $action) {
     $sql_posts = "CREATE TABLE IF NOT EXISTS $table_posts
         (id INT(10) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-        username VARCHAR(30) NOT NULL,
+        firstName VARCHAR(30) NOT NULL,
         nationalid VARCHAR(14) NOT NULL,
         phonenumber VARCHAR(30) NOT NULL,
         city VARCHAR(30) NOT NULL,
-        posttitle VARCHAR(30) NOT NULL,
+        posttitle VARCHAR(255) NOT NULL,
         posttext TEXT(500) NOT NULL,
         image TEXT NOT NULL,
+        imageU TEXT NOT NULL,
         FOREIGN KEY (nationalid) REFERENCES $table_accounts(nationalid)
         )";
 
@@ -130,7 +131,6 @@ if ("ADD_USER" == $action) {
 
 // Action to add post
 if ("ADD_POST" == $action) {
-    $username = $_POST["user_name"];
     $nationalid = $_POST["national_id"];
     $phonenumber = $_POST["phone_number"];
     $city = $_POST["city"];
@@ -142,6 +142,10 @@ if ("ADD_POST" == $action) {
     $result_check = $conn->query($sql_check);
 
     if ($result_check->num_rows > 0) {
+        $row = $result_check->fetch_assoc();
+        $firstName = $row['firstName']; // Get the user's first name from the Accounts table
+        $user_image = $row['image']; // Get the user's image from the Accounts table
+
         $image_name = uniqid() . '.png';
         $image_path = 'images/' . $image_name;
         $file_put_contents_result = file_put_contents($image_path, base64_decode($image));
@@ -149,8 +153,8 @@ if ("ADD_POST" == $action) {
         if ($file_put_contents_result === false) {
             echo "Failed to save image";
         } else {
-            $sql = "INSERT INTO $table_posts (username, nationalid, phonenumber, city, posttitle, posttext, image)
-                    VALUES ('$username', '$nationalid', '$phonenumber', '$city', '$title', '$posttext', '$image_name')";
+            $sql = "INSERT INTO $table_posts (firstName, nationalid, phonenumber, city, posttitle, posttext, image, imageU)
+                    VALUES ('$firstName', '$nationalid', '$phonenumber', '$city', '$title', '$posttext', '$image_name', '$user_image')";
             if ($conn->query($sql) === TRUE) {
                 echo "success";
             } else {
@@ -161,6 +165,7 @@ if ("ADD_POST" == $action) {
         echo "Invalid National ID or account is inactive";
     }
 }
+
 
 
 // Check user
@@ -268,11 +273,12 @@ if ("DISABLE_USER" == $action) {
 // Get all posts
 if ("GET_ALL" == $action) {
     $db_data = array();
-    $sql = "SELECT id, username, nationalid, phonenumber, city, posttitle, posttext, image FROM $table_posts ORDER BY id DESC";
+    $sql = "SELECT id, firstName, nationalid, phonenumber, city, posttitle, posttext, image, imageU FROM $table_posts ORDER BY id DESC";
     $result = $conn->query($sql);
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
             $row['image'] = base64_encode(file_get_contents('images/' . $row['image']));
+            $row['imageU'] = base64_encode(file_get_contents('images/' . $row['imageU']));
             $db_data[] = $row;
         }
         echo json_encode($db_data);

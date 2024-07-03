@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:popover/popover.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:hand2/model/posts.dart';
@@ -9,8 +10,10 @@ import 'package:hand2/screen/CreatePost.dart';
 import 'package:hand2/screen/LoginPage.dart';
 import 'package:hand2/screen/MyAccount_Worker.dart';
 
-
+import '../model/Feedback.dart';
 import '../model/server_post.dart';
+import '../model/sever_feedback.dart';
+import 'ShowCommentPageW.dart';
 
 class WorkerPage extends StatefulWidget {
   const WorkerPage({Key? key}) : super(key: key);
@@ -231,6 +234,168 @@ class PostItem extends StatefulWidget {
 }
 
 class _PostItemState extends State<PostItem> {
+  final TextEditingController _feedbackText = TextEditingController();
+  final TextEditingController _name = TextEditingController();
+  List<feedbacks> _feedbackList = [];
+
+  void sendWhatsapp() {
+    String url = 'https://wa.me/+2${widget.post.phonenumber}?text=Hello';
+    launchUrl(Uri.parse(url));
+  }
+
+  Future<void> _createTable() async {
+    String result = await ServicesFeedback.createFeedbackTable();
+    if (result != 'success') {
+      _showSnackBar('Failed to create table', Colors.red);
+    }
+  }
+
+  Future<void> _getFeedback() async {
+    try {
+      List<feedbacks> feedbackList = await ServicesFeedback.getFeedback(widget.post.id);
+      setState(() {
+        _feedbackList = feedbackList;
+      });
+
+      if (kDebugMode) {
+        print('Length: ${_feedbackList.length}');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching feedback: $e');
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to fetch feedback: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  void _showCommentPage() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('post_id', widget.post.id);
+
+    await _getFeedback(); // Retrieve feedback before navigating
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ShowCommentPageW(feedbackList: _feedbackList),
+      ),
+    );
+  }
+
+  void _showFeedbackPage() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ShowCommentPageW(feedbackList: _feedbackList),
+      ),
+    );
+  }
+
+  void _showSnackBar(String message, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: color,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _feedbackText.dispose();
+    super.dispose();
+  }
+
+
+  void _showDetailsDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('User Details'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(
+                    Icons.format_list_numbered,
+                    color: Colors.blue,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    widget.post.id,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  const Icon(
+                    Icons.location_city,
+                    color: Colors.blue,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    widget.post.city,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              GestureDetector(
+                onTap: () {
+                  Clipboard.setData(ClipboardData(text: widget.post.phonenumber));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Phone number copied successfully'),
+                      duration: Duration(seconds: 2),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                },
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.phone,
+                      color: Colors.blue,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      widget.post.phonenumber,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -255,15 +420,12 @@ class _PostItemState extends State<PostItem> {
               padding: const EdgeInsets.all(10),
               child: Row(
                 children: [
-                  CircleAvatar(
-                    backgroundColor: Colors.blue,
-                    radius: 20,
-                    child: Text(
-                      widget.post.username[0].toUpperCase(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                      ),
+                  GestureDetector(
+                    onTap: _showDetailsDialog,
+                    child: CircleAvatar(
+                      radius: 20,
+                      backgroundImage: MemoryImage(base64Decode(widget.post.imageU)), // عرض صورة imageU
+                      backgroundColor: Colors.transparent,
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -271,32 +433,16 @@ class _PostItemState extends State<PostItem> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.post.username,
+                        widget.post.firstName,
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.location_city,
-                            size: 16,
-                            color: Colors.grey,
-                          ),
-                          const SizedBox(width: 5),
-                          Text(
-                            widget.post.city,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ],
-                      ),
                       GestureDetector(
                         onTap: () {
-                          Clipboard.setData(ClipboardData(text: widget.post.phonenumber));
+                          Clipboard.setData(
+                              ClipboardData(text: widget.post.phonenumber));
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text('Phone number copied successfully'),
@@ -330,12 +476,51 @@ class _PostItemState extends State<PostItem> {
             ),
             Padding(
               padding: const EdgeInsets.all(10),
-              child: Text(
-                widget.post.postText,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.black87,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Divider(
+                          color: Colors.black87,
+                          thickness: 2,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        widget.post.postTitle,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Divider(
+                          color: Colors.black87,
+                          thickness: 2,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          widget.post.postText,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
             widget.post.image.isNotEmpty
@@ -348,35 +533,76 @@ class _PostItemState extends State<PostItem> {
             Padding(
               padding: const EdgeInsets.all(10),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton.icon(
-                    onPressed: () async {
-                      final phoneUrl = 'tel:${widget.post.phonenumber}';
-                      if (await canLaunch(phoneUrl)) {
-                        await launch(phoneUrl);
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Could not launch phone call')),
-                        );
-                      }
-                    },
-                    icon: Icon(Icons.call),
-                    label: Text('Call now'),
+                    onPressed: _showCommentPage,
+                    icon: const Icon(Icons.comment),
+                    label: const Text('Comment'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
                   ),
-                  ElevatedButton.icon(
-                    onPressed: () async {
-                      final whatsappUrl = 'https://wa.me/2${widget.post.phonenumber}?text=Hello';
-                      if (await canLaunch(whatsappUrl)) {
-                        await launch(whatsappUrl);
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Could not launch WhatsApp')),
-                        );
-                      }
+                  const SizedBox(width: 20),
+                  GestureDetector(
+                    onTap: () {
+                      showPopover(
+                        context: context,
+                        bodyBuilder: (BuildContext context) => Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Color.fromARGB(255, 33, 189, 202).withOpacity(0.1),
+                                Color.fromARGB(255, 33, 189, 202).withOpacity(1.0),
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                          ),
+                          child: ListView(
+                            padding: EdgeInsets.zero,
+                            shrinkWrap: true,
+                            children: [
+                              ListTile(
+                                leading: Icon(Icons.call),
+                                title: Text('Call now'),
+                                onTap: () async {
+                                  Navigator.of(context).pop(); // إغلاق القائمة بعد الضغط على الخيار
+                                  final phoneUrl = 'tel:${widget.post.phonenumber}';
+                                  if (await canLaunch(phoneUrl)) {
+                                    await launch(phoneUrl);
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Could not launch phone call')),
+                                    );
+                                  }
+                                },
+                              ),
+                              ListTile(
+                                leading: Icon(Icons.message),
+                                title: Text('WhatsApp'),
+                                onTap: () {
+                                  Navigator.of(context).pop(); // إغلاق القائمة بعد الضغط على الخيار
+                                  sendWhatsapp();
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        onPop: () => print('Popover was popped!'),
+                        direction: PopoverDirection.top,
+                        width: 440,
+                        height: 110,
+                        arrowHeight: 10,
+                        arrowWidth: 20,
+                        barrierColor: Colors.transparent,
+                        arrowDxOffset: 145,
+                      );
                     },
-                    icon: Icon(Icons.chat, color: Colors.green),
-                    label: Text('WhatsApp', style: TextStyle(color: Colors.green)),
+                    child: const Icon(Icons.more_vert),
                   ),
                 ],
               ),
