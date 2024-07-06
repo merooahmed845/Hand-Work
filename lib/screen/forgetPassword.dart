@@ -58,8 +58,8 @@ class _ForgetPasswordState extends State<ForgetPassword> {
       },
       child: Scaffold(
         body: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
+          decoration: const BoxDecoration(
+            image: const DecorationImage(
               image: AssetImage('images/BCK.png'),
               fit: BoxFit.cover,
             ),
@@ -71,7 +71,11 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
+                  Center(
+                    child: Image.asset('images/hard-work.png', height: 170),
+                  ),
+                  const SizedBox(height: 35),
+                  const Text(
                     'Forget Password',
                     style: TextStyle(
                       fontSize: 24,
@@ -79,11 +83,11 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                       color: Colors.black,
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 35),
                   if (!_isAuthenticated) ...[
                     TextField(
                       controller: _nationalIdController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'National ID',
                         border: OutlineInputBorder(),
                         prefixIcon: Icon(Icons.perm_identity),
@@ -94,10 +98,10 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                         FilteringTextInputFormatter.digitsOnly,
                       ],
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     TextFormField(
                       controller: _emailController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'E-mail',
                         border: OutlineInputBorder(),
                         prefixIcon: Icon(Icons.email),
@@ -112,16 +116,16 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                         return null;
                       },
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: _validateUser,
                       child: _isLoading
-                          ? CircularProgressIndicator(color: Colors.white)
-                          : Text('Get My Account'),
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text('Get My Account'),
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
-                        backgroundColor: Color.fromARGB(255, 33, 189, 202),
-                        minimumSize: Size(double.infinity, 50),
+                        backgroundColor: const Color.fromARGB(255, 33, 189, 202),
+                        minimumSize: const Size(double.infinity, 50),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -132,7 +136,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                         padding: const EdgeInsets.only(top: 10),
                         child: Text(
                           _errorMessage,
-                          style: TextStyle(color: Colors.red),
+                          style: const TextStyle(color: Colors.red),
                         ),
                       ),
                   ] else ...[
@@ -143,11 +147,11 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                           MaterialPageRoute(builder: (context) => UpdatePassword(nationalId: _nationalIdController.text)),
                         );
                       },
-                      child: Text('Proceed to Update Password'),
+                      child: const Text('Proceed to Update Password'),
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
-                        backgroundColor: Color.fromARGB(255, 33, 189, 202),
-                        minimumSize: Size(double.infinity, 50),
+                        backgroundColor: const Color.fromARGB(255, 33, 189, 202),
+                        minimumSize: const Size(double.infinity, 50),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),

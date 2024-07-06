@@ -78,8 +78,12 @@ class _IntroScreenState extends State<IntroScreen> with SingleTickerProviderStat
               Image.asset('images/pkpk.png', height: 200),
               const SizedBox(height: 20),
               const Text(
-                "Welcome to HandWork Application",
-                style: TextStyle(fontSize: 20, color: Colors.black),
+                "Welcome to HandWork ",
+                style: TextStyle(fontSize: 25, color: Colors.black ,fontWeight: FontWeight.bold),
+              ),
+              const Text(
+                " Application",
+                style: TextStyle(fontSize: 25, color: Colors.black,fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
               const SpinKitFadingCircle( // حزمة الرسوم المتحركة

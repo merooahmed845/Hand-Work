@@ -93,7 +93,7 @@ class _LoginPageState extends State<LoginPage> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         );
@@ -112,25 +112,27 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
+        decoration: const BoxDecoration(
+          image: const DecorationImage(
             image: AssetImage('images/BCK.png'),
             fit: BoxFit.cover,
           ),
         ),
+
         child: _isLoading
-            ? Center(child: CircularProgressIndicator())
+            ? const Center(child: CircularProgressIndicator())
             : Padding(
           padding: const EdgeInsets.all(16.0),
           child: Form(
             key: _formKey,
             child: ListView(
               children: [
+                SizedBox(height: 40),
                 Center(
                   child: Image.asset('images/hard-work.png', height: 170),
                 ),
-                SizedBox(height: 20),
-                Text(
+                const SizedBox(height: 20),
+                const Text(
                   'Welcome Back',
                   style: TextStyle(
                     fontSize: 24,
@@ -138,7 +140,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                Text(
+                const Text(
                   'Login to access your account',
                   style: TextStyle(
                     fontSize: 24,
@@ -146,10 +148,10 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 TextFormField(
                   controller: _nationalID,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'National ID',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.perm_identity),
@@ -169,13 +171,13 @@ class _LoginPageState extends State<LoginPage> {
                     return null;
                   },
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 TextFormField(
                   controller: _password,
                   decoration: InputDecoration(
                     labelText: 'Password',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.lock),
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.lock),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscurePassword ? Icons.visibility_off : Icons.visibility,
@@ -206,7 +208,7 @@ class _LoginPageState extends State<LoginPage> {
                         MaterialPageRoute(builder: (context) => ForgetPassword()),
                       );
                     },
-                    child: Text(
+                    child: const Text(
                       'Forgot Password?',
                       style: TextStyle(
                         color: (Color.fromARGB(255, 33, 189, 202)),
@@ -215,10 +217,10 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: checkUserAndNavigate,
-                  child: Text(
+                  child: const Text(
                     'Login',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
@@ -227,14 +229,14 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: Color.fromARGB(255, 33, 189, 202), // button background color
-                    minimumSize: Size(double.infinity, 50),
+                    backgroundColor: const Color.fromARGB(255, 33, 189, 202), // button background color
+                    minimumSize: const Size(double.infinity, 50),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8), // round corners
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -247,7 +249,7 @@ class _LoginPageState extends State<LoginPage> {
                     TextButton(
                       onPressed: () {
                         Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(builder: (context) => SignUpPage()),
+                          MaterialPageRoute(builder: (context) => const SignUpPage()),
                         );
                       },
                       child: const Text(

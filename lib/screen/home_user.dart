@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:popover/popover.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../model/Feedback.dart';
 import '../model/posts.dart';
@@ -10,8 +11,8 @@ import '../model/server_post.dart';
 import '../model/sever_feedback.dart';
 import 'LoginPage.dart';
 import 'MyAccount_user.dart';
-import 'ShowCommentPage.dart'; // استيراد الشاشة الجديدة
-import 'package:popover/popover.dart';
+import 'ShowCommentPage.dart';
+
 
 class SearchPage extends StatefulWidget {
   const SearchPage({Key? key}) : super(key: key);
@@ -128,48 +129,57 @@ class _SearchPageState extends State<SearchPage> with AutomaticKeepAliveClientMi
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: TextField(
-          decoration: InputDecoration(
-            hintText: 'Search posts and cities...',
-            border: InputBorder.none,
-            prefixIcon: Icon(
-              Icons.search,
-              size: 26, // حجم الأيقونة
-              color: Colors.black, // لون الأيقونة
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Scaffold(
+          appBar: AppBar(
+            title: TextField(
+              decoration: InputDecoration(
+                hintText: 'Search posts and cities...',
+                border: InputBorder.none,
+                prefixIcon: Icon(
+                  Icons.search,
+                  size: 26,
+                  color: Colors.black,
+                ),
+                hintStyle: TextStyle(fontSize: 26),
+              ),
+              style: TextStyle(fontSize: 26),
+              onChanged: _filterPosts,
             ),
-            hintStyle: TextStyle(fontSize: 26), // حجم الخط للتلميح
+            automaticallyImplyLeading: false,
           ),
-          style: TextStyle(fontSize: 26), // حجم الخط للنص المدخل
-          onChanged: _filterPosts,
-        ),
-        automaticallyImplyLeading: false,
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _selectedIndex == 0
-          ? buildHomeContent()
-          : buildProfileContent(),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+          body: _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _selectedIndex == 0
+              ? buildHomeContent()
+              : buildProfileContent(),
+          bottomNavigationBar: BottomNavigationBar(
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person),
+                label: 'Profile',
+              ),
+            ],
+            currentIndex: _selectedIndex,
+            selectedItemColor: Colors.blue,
+            onTap: _onItemTapped,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blue,
-        onTap: _onItemTapped,
-      ),
+        );
+      },
     );
   }
 
+
   Widget buildHomeContent() {
+    final mediaQuery = MediaQuery.of(context);
+    final screenHeight = mediaQuery.size.height;
+    final screenWidth = mediaQuery.size.width;
+
     return Row(
       children: [
         Expanded(
@@ -196,6 +206,7 @@ class _SearchPageState extends State<SearchPage> with AutomaticKeepAliveClientMi
     );
   }
 
+
   Widget buildProfileContent() {
     return const Center(
       child: Text(
@@ -219,8 +230,19 @@ class PostItem extends StatefulWidget {
 
 class _PostItemState extends State<PostItem> {
   final TextEditingController _feedbackText = TextEditingController();
-  final TextEditingController _name = TextEditingController();
+  final _nationalIdController = TextEditingController();
   List<feedbacks> _feedbackList = [];
+
+  Future<void> _loadSavedCredentials() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? savedNationalId = prefs.getString('nationalID');
+    String? savedPassword = prefs.getString('password');
+
+    if (savedNationalId != null && savedPassword != null) {
+      _nationalIdController.text = savedNationalId;
+      await _addFeedback();
+    }
+  }
 
   void sendWhatsapp() {
     String url = 'https://wa.me/+2${widget.post.phonenumber}?text=Hello';
@@ -292,10 +314,11 @@ class _PostItemState extends State<PostItem> {
     super.dispose();
   }
 
+
   Future<void> _addFeedback() async {
     String postId = widget.post.id;
     String feedbackText = _feedbackText.text.trim();
-    String name = _name.text.trim();
+    String nationalid = _nationalIdController.text.trim(); // تأكد من إزالة المسافات الزائدة
 
     if (feedbackText.isEmpty) {
       _showSnackBar('Please enter feedback', Colors.red);
@@ -303,10 +326,11 @@ class _PostItemState extends State<PostItem> {
     }
 
     try {
-      String response = await ServicesFeedback.addFeedback(postId, name, feedbackText);
+      String response = await ServicesFeedback.addFeedback(postId, nationalid, feedbackText);
       if (response == 'success') {
         _showSnackBar('Feedback added successfully', Colors.green);
         await _getFeedback();
+        _feedbackText.clear(); // قم بإعادة تعيين حقل النص بعد النجاح
       } else {
         _showSnackBar('Failed to add feedback', Colors.red);
       }
@@ -337,21 +361,6 @@ class _PostItemState extends State<PostItem> {
                   ),
                   const SizedBox(height: 10),
                   TextFormField(
-                    controller: _name,
-                    decoration: InputDecoration(
-                      labelText: 'Your name',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.person),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your name';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 10),
-                  TextFormField(
                     controller: _feedbackText,
                     decoration: InputDecoration(
                       labelText: 'Feedback',
@@ -378,6 +387,7 @@ class _PostItemState extends State<PostItem> {
                   child: const Text('Submit'),
                   onPressed: () {
                     _createTable();
+                    _loadSavedCredentials();
                     _addFeedback();
                     Navigator.of(context).pop();
                   },
@@ -505,7 +515,7 @@ class _PostItemState extends State<PostItem> {
                     onTap: _showDetailsDialog,
                     child: CircleAvatar(
                       radius: 20,
-                      backgroundImage: MemoryImage(base64Decode(widget.post.imageU)), // عرض صورة imageU
+                      backgroundImage: MemoryImage(base64Decode(widget.post.imageU)),
                       backgroundColor: Colors.transparent,
                     ),
                   ),
@@ -522,8 +532,7 @@ class _PostItemState extends State<PostItem> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          Clipboard.setData(
-                              ClipboardData(text: widget.post.phonenumber));
+                          Clipboard.setData(ClipboardData(text: widget.post.phonenumber));
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text('Phone number copied successfully'),
@@ -627,7 +636,7 @@ class _PostItemState extends State<PostItem> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 20), // المسافة بين الزرين
+                  const SizedBox(width: 20),
                   ElevatedButton.icon(
                     onPressed: _showCommentPage,
                     icon: const Icon(Icons.comment),
@@ -663,7 +672,7 @@ class _PostItemState extends State<PostItem> {
                                 leading: Icon(Icons.call),
                                 title: Text('Call now'),
                                 onTap: () async {
-                                  Navigator.of(context).pop(); // إغلاق القائمة بعد الضغط على الخيار
+                                  Navigator.of(context).pop();
                                   final phoneUrl = 'tel:${widget.post.phonenumber}';
                                   if (await canLaunch(phoneUrl)) {
                                     await launch(phoneUrl);
@@ -678,7 +687,7 @@ class _PostItemState extends State<PostItem> {
                                 leading: Icon(Icons.message),
                                 title: Text('WhatsApp'),
                                 onTap: () {
-                                  Navigator.of(context).pop(); // إغلاق القائمة بعد الضغط على الخيار
+                                  Navigator.of(context).pop();
                                   sendWhatsapp();
                                 },
                               ),

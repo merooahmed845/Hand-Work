@@ -69,10 +69,13 @@ if ("CREATE_TABLES_Posts" == $action) {
 if ("CREATE_TABLES_Feedback" == $action) {
     $sql_feedback = "CREATE TABLE IF NOT EXISTS $table_feedback (
         id INT(10) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        firstName VARCHAR(30) NOT NULL,
         post_id INT(10) UNSIGNED NOT NULL,
-        name VARCHAR(255) NOT NULL,
+        nationalid VARCHAR(14) NOT NULL,
         feedback_text TEXT NOT NULL,
-        FOREIGN KEY (post_id) REFERENCES $table_posts(id)
+        imageU TEXT NOT NULL,
+        FOREIGN KEY (post_id) REFERENCES $table_posts(id),
+        FOREIGN KEY (nationalid) REFERENCES $table_accounts(nationalid)
     )";
 
     if ($conn->query($sql_feedback) === TRUE) {
@@ -82,24 +85,31 @@ if ("CREATE_TABLES_Feedback" == $action) {
     }
 }
 
-
 if ("ADD_FEEDBACK" == $action) {
-    $post_id = $_POST['post_id'];
-    $name = $_POST['name'];
-    $feedback_text = $_POST['feedbacktext'];
+     $post_id = $_POST['post_id'];
+     $nationalid = $_POST['nationalid'];
+     $feedback_text = $_POST['feedbacktext'];
 
-    $sql = "INSERT INTO $table_feedback (post_id, name ,feedback_text ) VALUES ('$post_id', '$name', '$feedback_text')";
+     $sql_check = "SELECT * FROM $table_accounts WHERE nationalid='$nationalid' AND status=1";
+            $result_check = $conn->query($sql_check);
 
-    if ($conn->query($sql) === TRUE) {
-        echo "success";
+            if ($result_check->num_rows > 0) {
+                $row = $result_check->fetch_assoc();
+                $firstName = $row['firstName']; // Get the user's first name from the Accounts table
+                $user_image = $row['image']; // Get the user's image from the Accounts table
+
+                $sql_insert = "INSERT INTO $table_feedback (post_id, firstName, nationalid, feedback_text, imageU)
+                               VALUES ('$post_id', '$firstName', '$nationalid', '$feedback_text', '$user_image')";
+
+        if ($conn->query($sql_insert) === TRUE) {
+            echo "success";
+        } else {
+            echo "error: " . $conn->error;
+        }
     } else {
-        echo "error: " . $conn->error;
+        echo "error: User not found";
     }
 }
-
-
-
-
 // Action to add user
 if ("ADD_USER" == $action) {
     $firstName = $_POST["first_name"];
@@ -301,11 +311,12 @@ if ("DELETE_POST" == $action) {
 
 if ("GET_FEEDBACK" == $action) {
     $db_data = array();
-    $sql = "SELECT id, post_id, name, feedback_text FROM $table_feedback ORDER BY id DESC";
+    $sql = "SELECT id ,firstName ,post_id, feedback_text,imageU FROM $table_feedback ORDER BY id DESC";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
+            $row['imageU'] = base64_encode(file_get_contents('images/' . $row['imageU']));
             $db_data[] = $row;
         }
         echo json_encode($db_data);

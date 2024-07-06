@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import '../model/Feedback.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -74,42 +76,41 @@ class _ShowCommentPageState extends State<ShowCommentPage> {
                         padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Color.fromARGB(255, 100, 200, 202),
-                            borderRadius: BorderRadius.circular(50),
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10), // يمكنك ضبط هذا القيمة لتحديد الشكل الخارجي للحاوية
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 4,
+                                color: Colors.black.withOpacity(0.2),
+                                blurRadius: 6,
                                 offset: Offset(2, 2),
                               ),
                             ],
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(12.0),
-                            child: Column(
+                            child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                RichText(
-                                  text: TextSpan(
+                                CircleAvatar(
+                                  backgroundImage: MemoryImage(base64Decode(_filteredFeedbackList[index].imageU)),
+                                  radius: 30.0,
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      TextSpan(
-                                        text: _filteredFeedbackList[index].name,
+                                      Text(
+                                        _filteredFeedbackList[index].firstName,
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.black,
                                         ),
                                       ),
-                                      TextSpan(
-                                        text: ' : ',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                      TextSpan(
-                                        text: _filteredFeedbackList[index].feedback_text,
+                                      const SizedBox(height: 5), // Add some space between name and feedback text
+                                      Text(
+                                        _filteredFeedbackList[index].feedback_text,
                                         style: TextStyle(
                                           fontSize: 18,
                                           color: Colors.black87,
@@ -117,7 +118,7 @@ class _ShowCommentPageState extends State<ShowCommentPage> {
                                       ),
                                     ],
                                   ),
-                                )
+                                ),
                               ],
                             ),
                           ),

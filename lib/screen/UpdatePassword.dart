@@ -84,13 +84,30 @@ class _UpdatePasswordState extends State<UpdatePassword> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Update Password'),
-      ),
-      body: Padding(
+      body: Container(
+        decoration: const BoxDecoration(
+          image: const DecorationImage(
+            image: AssetImage('images/BCK.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            SizedBox(height: 40),
+            Center(
+              child: Image.asset('images/hard-work.png', height: 170),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Update Password',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
             TextField(
               controller: _newPasswordController,
               decoration: InputDecoration(
@@ -132,14 +149,22 @@ class _UpdatePasswordState extends State<UpdatePassword> {
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _updateInfo,
-              child: Text('Confirm'),
+              onPressed: () {
+                _updateInfo();
+              },
+              child: const Text(
+                'Update Password',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.white,
-                backgroundColor: Colors.blue,
-                minimumSize: Size(double.infinity, 50),
+                backgroundColor: const Color.fromARGB(255, 33, 189, 202), // text color
+                minimumSize: const Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(8), // slightly round corners
                 ),
               ),
             ),

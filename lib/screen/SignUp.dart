@@ -154,12 +154,13 @@ class _SignUpPageState extends State<SignUpPage> {
       },
       child: Scaffold(
         body: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
+          decoration: const BoxDecoration(
+            image: const DecorationImage(
               image: AssetImage('images/BCK.png'),
               fit: BoxFit.cover,
             ),
           ),
+
           child: Stack(
             children: [
               Padding(
@@ -168,13 +169,14 @@ class _SignUpPageState extends State<SignUpPage> {
                   key: _formKey,
                   child: ListView(
                     children: [
-                      // SizedBox(height: 5), // Adjusted to avoid overlapping with the back button
-                      Text(
+                      SizedBox(height: 25),
+                      const Text(
+
                         'Register',
                         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                         textAlign: TextAlign.center,
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 50),
                       Center(
                         child: GestureDetector(
                           onTap: _pickImage,
@@ -184,9 +186,9 @@ class _SignUpPageState extends State<SignUpPage> {
                                 radius: 50,
                                 backgroundImage: _selectedImageBytes != null
                                     ? MemoryImage(_selectedImageBytes!)
-                                    : AssetImage('images/personal.png') as ImageProvider,
+                                    : const AssetImage('images/personal.png') as ImageProvider,
                               ),
-                              Positioned(
+                              const Positioned(
                                 bottom: 0,
                                 right: 0,
                                 child: Icon(
@@ -199,13 +201,13 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       Row(
                         children: [
                           Expanded(
                             child: TextFormField(
                               controller: _firstName,
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 labelText: 'First Name',
                                 border: OutlineInputBorder(),
                                 prefixIcon: Icon(Icons.person),
@@ -218,11 +220,11 @@ class _SignUpPageState extends State<SignUpPage> {
                               },
                             ),
                           ),
-                          SizedBox(width: 10),
+                          const SizedBox(width: 10),
                           Expanded(
                             child: TextFormField(
                               controller: _lastName,
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 labelText: 'Last Name',
                                 border: OutlineInputBorder(),
                                 prefixIcon: Icon(Icons.person_outline),
@@ -237,10 +239,10 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       TextFormField(
                         controller: _email,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'E-mail',
                           border: OutlineInputBorder(),
                           prefixIcon: Icon(Icons.email),
@@ -255,13 +257,13 @@ class _SignUpPageState extends State<SignUpPage> {
                           return null;
                         },
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       TextFormField(
                         controller: _nationalID,
                         decoration: InputDecoration(
                           labelText: 'National ID',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.perm_identity),
+                          border: const OutlineInputBorder(),
+                          prefixIcon: const Icon(Icons.perm_identity),
                           errorText: _nationalIDError,
                         ),
                         keyboardType: TextInputType.number,
@@ -279,16 +281,16 @@ class _SignUpPageState extends State<SignUpPage> {
                           return null;
                         },
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       TextFormField(
                         controller: _password,
                         decoration: InputDecoration(
                           labelText: 'Password',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.lock),
+                          border: const OutlineInputBorder(),
+                          prefixIcon: const Icon(Icons.lock),
                           suffixIcon: IconButton(
                             icon: Icon(
-                              _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                              _obscurePassword ? Icons.visibility_off : Icons.visibility,
                             ),
                             onPressed: () {
                               setState(() {
@@ -314,7 +316,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           return null;
                         },
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       LinearProgressIndicator(
                         value: _passwordStrength,
                         backgroundColor: Colors.grey[300],
@@ -326,16 +328,16 @@ class _SignUpPageState extends State<SignUpPage> {
                               : Colors.green,
                         ),
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       TextFormField(
                         controller: _confirmPassword,
                         decoration: InputDecoration(
                           labelText: 'Confirm Password',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.lock),
+                          border: const OutlineInputBorder(),
+                          prefixIcon: const Icon(Icons.lock),
                           suffixIcon: IconButton(
                             icon: Icon(
-                              _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
+                              _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
                             ),
                             onPressed: () {
                               setState(() {
@@ -355,10 +357,10 @@ class _SignUpPageState extends State<SignUpPage> {
                           return null;
                         },
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       DropdownButtonFormField<String>(
                         value: _userType,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Type/User',
                           border: OutlineInputBorder(),
                           prefixIcon: Icon(Icons.person_pin),
@@ -381,17 +383,17 @@ class _SignUpPageState extends State<SignUpPage> {
                           return null;
                         },
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
                             _addUser();
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Processing Data')),
+                              const SnackBar(content: Text('Processing Data')),
                             );
                           }
                         },
-                        child: Text(
+                        child: const Text(
                           'Create Account',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
@@ -400,8 +402,8 @@ class _SignUpPageState extends State<SignUpPage> {
                         ),
                         style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.white,
-                          backgroundColor: Color.fromARGB(255, 33, 189, 202), // text color
-                          minimumSize: Size(double.infinity, 50),
+                          backgroundColor: const Color.fromARGB(255, 33, 189, 202), // text color
+                          minimumSize: const Size(double.infinity, 50),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8), // slightly round corners
                           ),

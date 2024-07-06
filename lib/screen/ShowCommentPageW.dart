@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:hand2/screen/home_worker.dart';
 import '../model/Feedback.dart';
@@ -87,30 +89,28 @@ class _ShowCommentPageWState extends State<ShowCommentPageW> {
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(12.0),
-                            child: Column(
+                            child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                RichText(
-                                  text: TextSpan(
+                                CircleAvatar(
+                                  backgroundImage: MemoryImage(base64Decode(_filteredFeedbackList[index].imageU)),
+                                  radius: 25.0,
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      TextSpan(
-                                        text: _filteredFeedbackList[index].name,
+                                      Text(
+                                        _filteredFeedbackList[index].firstName,
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.black,
                                         ),
                                       ),
-                                      TextSpan(
-                                        text: ' : ',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                      TextSpan(
-                                        text: _filteredFeedbackList[index].feedback_text,
+                                      Text(
+                                        _filteredFeedbackList[index].feedback_text,
                                         style: TextStyle(
                                           fontSize: 18,
                                           color: Colors.black87,
@@ -118,7 +118,7 @@ class _ShowCommentPageWState extends State<ShowCommentPageW> {
                                       ),
                                     ],
                                   ),
-                                )
+                                ),
                               ],
                             ),
                           ),
